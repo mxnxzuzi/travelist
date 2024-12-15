@@ -3,6 +3,7 @@ package ddwu.com.mobile.myapplication.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,6 +21,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import ddwu.com.mobile.myapplication.R
 import ddwu.com.mobile.myapplication.data.database.AppDatabase
@@ -35,6 +37,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+    private val markerNoteMap = mutableMapOf<Marker, Int>()
 
     private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -58,7 +61,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this) // 위치 서비스 초기화
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         binding.addTravel.setOnClickListener {
             val intent = Intent(this, AddTravelActivity::class.java)
@@ -97,7 +100,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        checkLocationPermission() // 현 위치 가져오기
+        checkLocationPermission()
         loadMarkersForAllTrips()
     }
 
@@ -132,66 +135,98 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 location?.let {
                     val currentLatLng = LatLng(location.latitude, location.longitude)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
-                    //mMap.addMarker(MarkerOptions().position(currentLatLng).title("현 위치"))
                 }
             }
         }
     }
+
 
     private fun loadMarkersForAllTrips() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val notes = noteViewModel.getAllNotes()
-            withContext(Dispatchers.Main) {
+        tripViewModel.allTrips.observe(this) { trips ->
+            noteViewModel.new_notes.observe(this) { notes ->
+                mMap.clear()
+                markerNoteMap.clear()
+
                 notes.forEach { note ->
+                    val tripColor = trips.find { it.id == note.tripId }?.color ?: 0xFFFFA500.toInt()
                     val latLng = LatLng(note.latitude, note.longitude)
-                    addMarker(latLng, note.location, note.tripId)
+                    addMarker(latLng, note.location, tripColor, note.id)
                 }
             }
         }
     }
 
-    private fun addMarker(latLng: LatLng, title: String, color: Int) {
-        mMap.addMarker(
+
+
+
+    private fun addMarker(latLng: LatLng, title: String, color: Int, noteId: Int) {
+        val marker = mMap.addMarker(
             MarkerOptions()
                 .position(latLng)
                 .title(title)
                 .icon(BitmapDescriptorFactory.defaultMarker(getMarkerColor(color)))
         )
+        marker?.let { markerNoteMap[it] = noteId }
     }
 
     private fun getMarkerColor(color: Int): Float {
-        return when (color) {
-            0xFFFF0000.toInt() -> BitmapDescriptorFactory.HUE_RED
-            0xFF00FF00.toInt() -> BitmapDescriptorFactory.HUE_GREEN
-            0xFF0000FF.toInt() -> BitmapDescriptorFactory.HUE_BLUE
-            else -> BitmapDescriptorFactory.HUE_ORANGE
+        return if (color < 0) {
+            val hsv = FloatArray(3)
+            Color.colorToHSV(color, hsv)
+            hsv[0]
+        } else {
+            BitmapDescriptorFactory.HUE_RED
         }
     }
 
+
+    // trip 삭제시 note & marker 동시 삭제 코드
     private fun showDeleteDialog(tripId: Int) {
         AlertDialog.Builder(this)
             .setTitle("삭제 확인")
             .setMessage("정말로 여행을 삭제하시겠습니까?")
             .setPositiveButton("삭제") { _, _ ->
-                tripViewModel.deleteTrip(tripId)
-                Toast.makeText(this, "여행이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                lifecycleScope.launch(Dispatchers.IO) {
+                    tripViewModel.deleteTrip(tripId)
+                    withContext(Dispatchers.Main) {
+                        clearMarkersForTrip(tripId)
+                        Toast.makeText(this@MainActivity, "여행이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
             .setNegativeButton("취소", null)
             .show()
     }
 
+    private fun clearMarkersForTrip(tripId: Int) {
+        val markersToRemove = markerNoteMap.filter { it.value == tripId }.keys
+        markersToRemove.forEach { marker ->
+            marker.remove()
+            markerNoteMap.remove(marker)
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_ADD_NOTE && resultCode == RESULT_OK) {
+            val noteId = data?.getLongExtra("noteId", -1L)
             val location = data?.getStringExtra("location")
             val latitude = data?.getDoubleExtra("latitude", 0.0)
             val longitude = data?.getDoubleExtra("longitude", 0.0)
+            val color = data?.getIntExtra("color", 0)
 
-            if (latitude != null && longitude != null) {
+            Toast.makeText(this, "${color}", Toast.LENGTH_SHORT).show()
+
+
+            if (latitude != null && longitude != null && color != null) {
                 val latLng = LatLng(latitude, longitude)
-                addMarker(latLng, location ?: "Unknown", 0xFFFFA500.toInt())
+                addMarker(latLng, location ?: "Unknown", color, noteId?.toInt() ?: -1)
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
             }
         }
     }
+
+
+
+
 }

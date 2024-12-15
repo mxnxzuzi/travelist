@@ -11,16 +11,27 @@ import kotlinx.coroutines.launch
 
 class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
 
+    val new_notes: LiveData<List<Note>> = repository.getAllNotesLiveData()
+
     private val _notes = MutableLiveData<List<Note>>()
     val notes: LiveData<List<Note>> get() = _notes
 
-    fun insertNoteWithValidation(note: Note, tripId: Int) {
+    fun insertNoteAndGetId(note: Note, tripId: Int, onResult: (Long) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                repository.insertNoteWithValidation(note, tripId)
+                val noteId = repository.insertNoteAndGetId(note, tripId)
+                viewModelScope.launch(Dispatchers.Main) {
+                    onResult(noteId)
+                }
             } catch (e: IllegalArgumentException) {
                 e.printStackTrace()
             }
+        }
+    }
+
+    fun deleteNoteById(noteId: Int) {
+        viewModelScope.launch {
+            repository.deleteNoteById(noteId)
         }
     }
 

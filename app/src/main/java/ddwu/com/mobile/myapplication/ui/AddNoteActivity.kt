@@ -49,6 +49,7 @@ class AddNoteActivity : AppCompatActivity() {
         val tripId = intent.getIntExtra("tripId", -1)
         val tripColor = intent.getIntExtra("tripColor", 0xFFFFA500.toInt())
 
+
         if (tripId == -1) {
             Toast.makeText(this, "유효하지 않은 여행 ID입니다.", Toast.LENGTH_SHORT).show()
             finish()
@@ -98,20 +99,18 @@ class AddNoteActivity : AppCompatActivity() {
             )
 
 
-            noteViewModel.insertNoteWithValidation(note, tripId)
-
-
-            val resultIntent = Intent().apply {
-                putExtra("location", location)
-                putExtra("latitude", selectedLatLng!!.latitude)
-                putExtra("longitude", selectedLatLng!!.longitude)
-                putExtra("color", tripColor)
+            noteViewModel.insertNoteAndGetId(note, tripId) { noteId ->
+                val resultIntent = Intent().apply {
+                    putExtra("noteId", noteId)
+                    putExtra("location", location)
+                    putExtra("latitude", selectedLatLng!!.latitude)
+                    putExtra("longitude", selectedLatLng!!.longitude)
+                    putExtra("color", tripColor)
+                }
+                setResult(RESULT_OK, resultIntent)
+                finish()
             }
-            setResult(RESULT_OK, resultIntent)
 
-            Toast.makeText(this, "메모가 추가되었습니다.", Toast.LENGTH_SHORT).show()
-            finish()
         }
-
     }
 }
