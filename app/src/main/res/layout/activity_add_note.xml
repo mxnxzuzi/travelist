@@ -36,7 +36,7 @@ android:background="@android:color/white">
         <EditText
             android:id="@+id/content"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="100dp"
             android:layout_marginBottom="18dp"
             android:background="@drawable/rounded_border"
             android:hint="메모:"
@@ -61,8 +61,9 @@ android:background="@android:color/white">
 
         <ImageView
             android:id="@+id/image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="20dp"
             app:srcCompat="@drawable/ic_launcher_foreground" />
 
         <LinearLayout
@@ -71,7 +72,7 @@ android:background="@android:color/white">
         android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/add_picture"
+            android:id="@+id/addPicture"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -88,7 +89,7 @@ android:background="@android:color/white">
             app:strokeWidth="1dp" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/take_picture"
+            android:id="@+id/takePicture"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
