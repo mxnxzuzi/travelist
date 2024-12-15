@@ -18,8 +18,8 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBv1JCVtrZhkiyFBiep6b-xptUSq0a4sWQ"
-            />
+            android:value="AIzaSyBv1JCVtrZhkiyFBiep6b-xptUSq0a4sWQ" />
+
         <activity
             android:name=".ui.SplashActivity"
             android:exported="true"
@@ -34,6 +34,9 @@
             android:exported="false" />
         <activity
             android:name=".ui.AddTravelActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.AddNoteActivity"
             android:exported="false" />
     </application>
 

@@ -1,5 +1,6 @@
 package ddwu.com.mobile.myapplication.ui
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -9,7 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import ddwu.com.mobile.myapplication.data.model.Trip
 import ddwu.com.mobile.myapplication.databinding.ItemTripBinding
 
-class TripAdapter(private val onDeleteClick: (Int) -> Unit) : ListAdapter<Trip, TripAdapter.TripViewHolder>(TripDiffCallback()) {
+class TripAdapter(private val onDeleteClick: (Int) -> Unit,
+                  private val onAddMarkerClick: (Trip) -> Unit
+    ) : ListAdapter<Trip, TripAdapter.TripViewHolder>(TripDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripViewHolder {
         val binding = ItemTripBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -20,7 +23,10 @@ class TripAdapter(private val onDeleteClick: (Int) -> Unit) : ListAdapter<Trip, 
         val trip = getItem(position)
         holder.bind(trip)
         holder.binding.delete.setOnClickListener {
-            onDeleteClick(trip.id) // Trip ID 전달
+            onDeleteClick(trip.id)
+        }
+        holder.binding.addMarker.setOnClickListener {
+            onAddMarkerClick(trip)
         }
     }
 
