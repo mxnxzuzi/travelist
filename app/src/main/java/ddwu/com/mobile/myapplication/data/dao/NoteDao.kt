@@ -21,4 +21,5 @@ interface NoteDao {
 
     @Insert
     suspend fun insertNote(note: Note): Long
+
 }

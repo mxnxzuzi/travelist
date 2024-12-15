@@ -67,10 +67,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             val intent = Intent(this, AddTravelActivity::class.java)
             startActivity(intent)
         }
+        binding.memories.setOnClickListener {
+            val intent = Intent(this, MemoriesActivity::class.java)
+            startActivity(intent)
+        }
 
         setupRecyclerView()
         setupMap()
     }
+
 
     private fun setupRecyclerView() {
         val adapter = TripAdapter(
@@ -140,7 +145,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-
     private fun loadMarkersForAllTrips() {
         tripViewModel.allTrips.observe(this) { trips ->
             noteViewModel.new_notes.observe(this) { notes ->
@@ -155,9 +159,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
-
-
-
 
     private fun addMarker(latLng: LatLng, title: String, color: Int, noteId: Int) {
         val marker = mMap.addMarker(
@@ -214,8 +215,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             val latitude = data?.getDoubleExtra("latitude", 0.0)
             val longitude = data?.getDoubleExtra("longitude", 0.0)
             val color = data?.getIntExtra("color", 0)
-
-            Toast.makeText(this, "${color}", Toast.LENGTH_SHORT).show()
 
 
             if (latitude != null && longitude != null && color != null) {

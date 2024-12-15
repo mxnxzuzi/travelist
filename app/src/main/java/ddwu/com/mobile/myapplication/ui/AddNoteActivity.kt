@@ -150,22 +150,27 @@ class AddNoteActivity : AppCompatActivity() {
             val photoFile: File? = createImageFile()
             photoFile?.let {
                 val photoUri = FileProvider.getUriForFile(
-                    this, "${packageName}.fileprovider", it
+                    this,
+                    "${applicationContext.packageName}.fileprovider",
+                    it
                 )
-                currentPhotoPath = photoUri.toString()
+                currentPhotoPath = it.absolutePath
                 takePictureLauncher.launch(photoUri)
             }
+
         }
     }
 
     private fun createImageFile(): File? {
         return try {
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val storageDir = externalCacheDir
+            val storageDir = getExternalFilesDir("cache")
             File.createTempFile("JPEG_${timeStamp}_", ".jpg", storageDir)
         } catch (e: IOException) {
             Toast.makeText(this, "이미지 파일 생성에 실패했습니다.", Toast.LENGTH_SHORT).show()
             null
         }
     }
+
+
 }
