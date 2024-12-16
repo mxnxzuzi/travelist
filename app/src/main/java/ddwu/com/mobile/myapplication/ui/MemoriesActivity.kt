@@ -21,11 +21,10 @@ import ddwu.com.mobile.myapplication.databinding.ActivityAddNoteBinding
 import ddwu.com.mobile.myapplication.databinding.ActivityAddTravelBinding
 import ddwu.com.mobile.myapplication.databinding.ActivityMemoriesBinding
 import ddwu.com.mobile.myapplication.ui.adapter.ImageAdapter
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-
 class MemoriesActivity : AppCompatActivity() {
+    companion object {
+        private const val REQUEST_NOTE_DETAIL = 1002
+    }
 
     private lateinit var photoGridView: GridView
     private lateinit var tripFilterSpinner: Spinner
@@ -48,6 +47,15 @@ class MemoriesActivity : AppCompatActivity() {
 
         loadNotesAndTrips()
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_NOTE_DETAIL && resultCode == RESULT_OK) {
+            Toast.makeText(this, "노트가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+            loadNotesAndTrips()
+        }
+    }
+
 
     private fun loadNotesAndTrips() {
         val noteDao = AppDatabase.getDatabase(this).noteDao()
@@ -91,12 +99,14 @@ class MemoriesActivity : AppCompatActivity() {
             val note = notes[position]
 
             val intent = Intent(this, NoteDetailActivity::class.java).apply {
+                putExtra("noteId", note.id)
                 putExtra("imagePath", note.image)
                 putExtra("content", note.content)
                 putExtra("location", note.location)
                 putExtra("weather", note.weather)
             }
-            startActivity(intent)
+
+            startActivityForResult(intent, REQUEST_NOTE_DETAIL)
         }
     }
 

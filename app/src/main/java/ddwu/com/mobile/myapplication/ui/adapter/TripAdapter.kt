@@ -11,7 +11,8 @@ import ddwu.com.mobile.myapplication.data.model.Trip
 import ddwu.com.mobile.myapplication.databinding.ItemTripBinding
 
 class TripAdapter(private val onDeleteClick: (Int) -> Unit,
-                  private val onAddMarkerClick: (Trip) -> Unit
+                  private val onAddMarkerClick: (Trip) -> Unit,
+                  private val onItemClick: (Trip) -> Unit
     ) : ListAdapter<Trip, TripAdapter.TripViewHolder>(TripDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripViewHolder {
@@ -22,6 +23,9 @@ class TripAdapter(private val onDeleteClick: (Int) -> Unit,
     override fun onBindViewHolder(holder: TripViewHolder, position: Int) {
         val trip = getItem(position)
         holder.bind(trip)
+        holder.itemView.setOnClickListener {
+            onItemClick(trip)
+        }
         holder.binding.delete.setOnClickListener {
             onDeleteClick(trip.id)
         }

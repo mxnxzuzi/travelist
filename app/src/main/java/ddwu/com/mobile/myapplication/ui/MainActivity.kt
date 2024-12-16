@@ -88,6 +88,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 intent.putExtra("tripName", trip.name)
                 intent.putExtra("tripColor", trip.color)
                 startActivityForResult(intent, REQUEST_ADD_NOTE)
+            },
+            onItemClick = { trip ->
+                moveToTripMarkers(trip.id)
             }
         )
         binding.tripRecyclerView.adapter = adapter
@@ -97,6 +100,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             adapter.submitList(trips)
         }
     }
+
+    private fun moveToTripMarkers(tripId: Int) {
+        noteViewModel.new_notes.observe(this) { notes ->
+            val note = notes.find { it.tripId == tripId }
+            note?.let {
+                val latLng = LatLng(it.latitude, it.longitude)
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+            } ?: Toast.makeText(this, "해당 여행에 마커가 없습니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
     private fun setupMap() {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -161,7 +175,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
-
 
 
     private fun addMarker(latLng: LatLng, title: String, color: Int, noteId: Int) {
