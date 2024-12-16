@@ -89,10 +89,16 @@ class MemoriesActivity : AppCompatActivity() {
 
         photoGridView.setOnItemClickListener { _, _, position, _ ->
             val note = notes[position]
+
             val intent = Intent(this, NoteDetailActivity::class.java).apply {
-                putExtra("noteId", note.id)
+                putExtra("imagePath", note.image)
+                putExtra("content", note.content)
+                putExtra("location", note.location)
+                putExtra("weather", note.weather)
             }
             startActivity(intent)
         }
     }
+
+
 }
