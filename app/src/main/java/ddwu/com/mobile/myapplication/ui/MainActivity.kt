@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import ddwu.com.mobile.myapplication.R
 import ddwu.com.mobile.myapplication.data.database.AppDatabase
+import ddwu.com.mobile.myapplication.data.network.RetrofitInstance
 import ddwu.com.mobile.myapplication.data.repository.NoteRepository
 import ddwu.com.mobile.myapplication.data.repository.TripRepository
 import ddwu.com.mobile.myapplication.databinding.ActivityMainBinding
@@ -61,6 +63,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         binding.addTravel.setOnClickListener {
@@ -71,6 +74,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             val intent = Intent(this, MemoriesActivity::class.java)
             startActivity(intent)
         }
+        binding.recommend.setOnClickListener {
+            val intent = Intent(this, RecommendActivity::class.java)
+            startActivity(intent)
+        }
+
 
         setupRecyclerView()
         setupMap()
