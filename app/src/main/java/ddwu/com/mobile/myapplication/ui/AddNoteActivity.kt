@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -51,11 +52,17 @@ class AddNoteActivity : AppCompatActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val imageUri: Uri? = result.data?.data
                 imageUri?.let {
-                    binding.image.setImageURI(it)
-                    currentPhotoPath = it.toString()
+                    val savedPath = copyImageToInternalStorage(it)
+                    if (savedPath != null) {
+                        currentPhotoPath = savedPath
+                        binding.image.setImageURI(Uri.parse(savedPath))
+                    } else {
+                        Toast.makeText(this, "이미지 복사에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
+
 
     private val takePictureLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
@@ -127,7 +134,7 @@ class AddNoteActivity : AppCompatActivity() {
                 latitude = selectedLatLng!!.latitude,
                 longitude = selectedLatLng!!.longitude
             )
-
+            Toast.makeText(this, "${currentPhotoPath}", Toast.LENGTH_SHORT).show()
             noteViewModel.insertNoteAndGetId(note, tripId) { noteId ->
                 val resultIntent = Intent().apply {
                     putExtra("noteId", noteId)
@@ -160,6 +167,28 @@ class AddNoteActivity : AppCompatActivity() {
 
         }
     }
+
+    private fun copyImageToInternalStorage(uri: Uri): String? {
+        return try {
+            val inputStream = contentResolver.openInputStream(uri)
+            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val fileName = "IMG_$timeStamp.jpg"
+            val outputFile = File(filesDir, fileName)
+
+            inputStream?.use { input ->
+                outputFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            Log.d("AddNoteActivity", "Saved Image Path: ${outputFile.absolutePath}")
+            outputFile.absolutePath
+        } catch (e: Exception) {
+            Log.e("AddNoteActivity", "Error copying image to internal storage", e)
+            null
+        }
+    }
+
 
     private fun createImageFile(): File? {
         return try {

@@ -17,6 +17,9 @@ import ddwu.com.mobile.myapplication.R
 import ddwu.com.mobile.myapplication.data.database.AppDatabase
 import ddwu.com.mobile.myapplication.data.model.Note
 import ddwu.com.mobile.myapplication.data.model.Trip
+import ddwu.com.mobile.myapplication.databinding.ActivityAddNoteBinding
+import ddwu.com.mobile.myapplication.databinding.ActivityAddTravelBinding
+import ddwu.com.mobile.myapplication.databinding.ActivityMemoriesBinding
 import ddwu.com.mobile.myapplication.ui.adapter.ImageAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,10 +31,17 @@ class MemoriesActivity : AppCompatActivity() {
     private lateinit var tripFilterSpinner: Spinner
     private var notes: List<Note> = listOf()
     private var filteredNotes: List<Note> = listOf()
-
+    private val binding by lazy {
+        ActivityMemoriesBinding.inflate(layoutInflater)
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_memories)
+        setContentView(binding.root)
+
+        binding.back.setOnClickListener {
+            finish()
+        }
 
         photoGridView = findViewById(R.id.photoGridView)
         tripFilterSpinner = findViewById(R.id.tripFilterSpinner)

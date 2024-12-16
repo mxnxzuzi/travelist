@@ -7,5 +7,5 @@
     <cache-path name="cache" path="." />
 
     <!-- 외부 저장소의 앱 파일 디렉토리 -->
-    <external-files-path name="external_files" path="cache/" />
+    <external-files-path name="external_files" path="." />
 </paths>
