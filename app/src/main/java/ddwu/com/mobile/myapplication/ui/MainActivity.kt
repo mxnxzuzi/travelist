@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             note?.let {
                 val latLng = LatLng(it.latitude, it.longitude)
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
-            } ?: Toast.makeText(this, "해당 여행에 마커가 없습니다.", Toast.LENGTH_SHORT).show()
+            } ?: Log.d("TripMarkers", "해당 여행에 마커가 없습니다.")
         }
     }
 
