@@ -35,6 +35,13 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         }
     }
 
+    fun deleteNotesByTripId(tripId: Int) {
+        viewModelScope.launch {
+            repository.deleteNotesByTripId(tripId)
+        }
+    }
+
+
     suspend fun getAllNotes(): List<Note> {
         return repository.getAllNotes()
     }

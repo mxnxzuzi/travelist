@@ -22,4 +22,7 @@ interface NoteDao {
     @Insert
     suspend fun insertNote(note: Note): Long
 
+    @Query("DELETE FROM note WHERE tripId = :tripId")
+    suspend fun deleteNotesByTripId(tripId: Int)
+
 }

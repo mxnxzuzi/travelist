@@ -134,7 +134,7 @@ class AddNoteActivity : AppCompatActivity() {
                 latitude = selectedLatLng!!.latitude,
                 longitude = selectedLatLng!!.longitude
             )
-            Toast.makeText(this, "${currentPhotoPath}", Toast.LENGTH_SHORT).show()
+
             noteViewModel.insertNoteAndGetId(note, tripId) { noteId ->
                 val resultIntent = Intent().apply {
                     putExtra("noteId", noteId)

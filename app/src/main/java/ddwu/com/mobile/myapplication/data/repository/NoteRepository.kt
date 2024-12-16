@@ -29,4 +29,9 @@ class NoteRepository(
         noteDao.deleteNoteById(noteId)
     }
 
+    suspend fun deleteNotesByTripId(tripId: Int) {
+        noteDao.deleteNotesByTripId(tripId)
+    }
+
+
 }

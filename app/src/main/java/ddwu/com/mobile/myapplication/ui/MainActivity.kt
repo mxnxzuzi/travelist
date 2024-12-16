@@ -152,13 +152,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 markerNoteMap.clear()
 
                 notes.forEach { note ->
-                    val tripColor = trips.find { it.id == note.tripId }?.color ?: 0xFFFFA500.toInt()
-                    val latLng = LatLng(note.latitude, note.longitude)
-                    addMarker(latLng, note.location, tripColor, note.id)
+                    val tripColor = trips.find { it.id == note.tripId }?.color
+                    if (tripColor != null) {
+                        val latLng = LatLng(note.latitude, note.longitude)
+                        addMarker(latLng, note.location, tripColor, note.id)
+                    }
                 }
             }
         }
     }
+
+
 
     private fun addMarker(latLng: LatLng, title: String, color: Int, noteId: Int) {
         val marker = mMap.addMarker(
@@ -189,23 +193,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             .setPositiveButton("삭제") { _, _ ->
                 lifecycleScope.launch(Dispatchers.IO) {
                     tripViewModel.deleteTrip(tripId)
+                    noteViewModel.deleteNotesByTripId(tripId)
                     withContext(Dispatchers.Main) {
-                        clearMarkersForTrip(tripId)
+                        loadMarkersForAllTrips()
                         Toast.makeText(this@MainActivity, "여행이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                    }
+                      }
                 }
             }
             .setNegativeButton("취소", null)
             .show()
     }
 
-    private fun clearMarkersForTrip(tripId: Int) {
-        val markersToRemove = markerNoteMap.filter { it.value == tripId }.keys
-        markersToRemove.forEach { marker ->
-            marker.remove()
-            markerNoteMap.remove(marker)
-        }
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
