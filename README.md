@@ -16,16 +16,16 @@
 ---
 
 ## 📸 UI (Screenshots)
-# ➡️ 여행 추가
+### ➡️ 여행 추가
 <img width="1078" height="507" alt="Image" src="https://github.com/user-attachments/assets/3a2c5e3d-953d-442c-ae46-28f9b5db5afb" />
 
-# ➡️ 마커 추가
+### ➡️ 마커 추가
 <img width="1076" height="595" alt="Image" src="https://github.com/user-attachments/assets/b458e20e-fb1d-4e0e-a870-198dcbfe23f8" />
 
-# ➡️ 여행 기록 보기
+### ➡️ 여행 기록 보기
 <img width="1074" height="587" alt="Image" src="https://github.com/user-attachments/assets/f525f69c-a96b-4082-8133-9b82bfa15b16" />
 
-# ➡️ 장소 추천
+### ➡️ 장소 추천
 <img width="1082" height="599" alt="Image" src="https://github.com/user-attachments/assets/85f2cf7a-7615-4eb2-82e0-7e57825c18cb" />
 
 ---
